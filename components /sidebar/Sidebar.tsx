@@ -66,7 +66,7 @@ const MenuElement = ({id, isActive, setActive, ...props}) => {
 
 export const Sidebar = () => {
     const isClose = useBoolean(true);
-    const [activeMenuElementId, setActiveMenuElementId] = useState<number>(-1);
+    const [activeMenuElementId, setActiveMenuElementId] = useState<number>(0);
     const isFirstRender = useBoolean(true);
 
     useEffect(() => {
@@ -88,7 +88,7 @@ export const Sidebar = () => {
             <i className='bx bxl-gmail'/>
             <div className="logo-name">Market Stat</div>
         </a>
-        <ul className="sidebar-list" key="asa">
+        <ul className="sidebar-list">
             {
                 menuElements.map(info =>
                     <MenuElement
