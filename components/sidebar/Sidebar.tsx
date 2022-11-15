@@ -1,59 +1,22 @@
 import {ReactElement, ReactNode, useCallback, useEffect, useState} from "react";
-import useBoolean from "../../hooks/useBoolean";
+import useBoolean from "../../lib/hooks/useBoolean";
+import {menuElements} from "./navigation";
+import {useAuth} from "../../lib/hooks/useAuth";
+import {useRouter} from "next/router";
 
-interface MenuElement {
-    id: number,
-    name: string,
-    icon: ReactElement
-}
-
-const menuElements : Array<MenuElement> = [
-    {
-        id: 0,
-        name: "UNIT-Экономика",
-        icon: <i className='bx bx-line-chart'/>
-    },
-    {
-        id: 1,
-        name: "Расчет цен из Китая",
-        icon: <i className='bx bxs-factory'/>
-    },
-    {
-        id: 2,
-        name: "Расчет цен из Китая CARGO",
-        icon: <i className='bx bx-bar-chart-alt-2'/>,
-    },
-    {
-        id: 3,
-        name: "Налоги",
-        icon: <i className='bx bx-coin-stack'/>,
-    },
-    {
-        id: 4,
-        name: "Финансовые показатели",
-        icon: <i className='bx bx-bar-chart-alt-2'/>,
-    },
-    {
-        id: 5,
-        name: "Финансовые итоги",
-        icon: <i className='bx bxs-pie-chart-alt-2'/>,
-    },
-    {
-        id: 6,
-        name: "Маркировка",
-        icon: <i className='bx bx-barcode-reader'/>,
-    },
-    {
-        id: 7,
-        name: "Выйти из аккаунта",
-        icon: <i className='bx bx-log-out'/>
-    }
-];
 
 const MenuElement = ({id, isActive, setActive, ...props}) => {
+    const {onLogout} = useAuth();
+    const router = useRouter();
     return <li onClick={setActive} className={isActive ? "active" : ""}>
         <div className="title">
-            <a href="#" className="link">
+            <a href="#" className="link" onClick={() => {
+                    if (id === menuElements.length - 1) {
+                        onLogout();
+                        router.replace("/account/login").then(router.reload);
+                    }
+                }
+            }>
                 {menuElements[id].icon}
                 <span className="name">{menuElements[id].name}</span>
             </a>
@@ -64,10 +27,10 @@ const MenuElement = ({id, isActive, setActive, ...props}) => {
     </li>
 }
 
-export const Sidebar = () => {
+export const Sidebar = ({activeMenuElementId, setActiveMenuElementId}) => {
     const isClose = useBoolean(true);
-    const [activeMenuElementId, setActiveMenuElementId] = useState<number>(0);
     const isFirstRender = useBoolean(true);
+
 
     useEffect(() => {
         isFirstRender.setFalse();

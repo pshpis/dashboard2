@@ -20,3 +20,13 @@ model User {
   created_at DateTime @default(now())
   auth_token String   @unique
 }
+
+model User_Info {
+  id Int   @id @default(autoincrement())
+  user_id Int @unique
+  phone_number String
+  company_name String
+  INN String
+  payment_account String
+  bank_id String
+}
