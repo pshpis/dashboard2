@@ -21,12 +21,12 @@ model User {
   auth_token String   @unique
 }
 
-model User_Info {
+model UserInfo {
   id Int   @id @default(autoincrement())
   user_id Int @unique
-  phone_number String
-  company_name String
-  INN String
-  payment_account String
-  bank_id String
+  phone_number String @default("")
+  company_name String @default("")
+  INN String @default("")
+  payment_account String @default("")
+  bank_id String @default("")
 }

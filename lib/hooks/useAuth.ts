@@ -1,6 +1,7 @@
 import {User} from "@prisma/client";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import useLocalStorageState from "use-local-storage-state";
+import {userInfo} from "os";
 
 async function getUserByAuthToken(authToken){
     let user = null;
@@ -28,6 +29,26 @@ export function useAuth(){
         const newUser: User = await getUserByAuthToken(authToken);
         setUser(newUser);
     }, [setUser, authToken]);
+
+    const getUserInfo = useCallback(async () => {
+        if (user === null) return null;
+        const req = await fetch(`/api/get_user_info?user_id=${user.id}`);
+        const response = await req.json();
+        if (response.error !== undefined){
+            return null;
+        }
+        return response.userInfo;
+    }, [user]);
+
+    const setUserInfo = useCallback(async data => {
+        if (user === null) return null;
+        const req = await fetch(`/api/set_user_info?user_id=${user.id}&data=${JSON.stringify(data)}`);
+        const response = await req.json();
+        if (response.error !== undefined){
+            return null;
+        }
+        return response.userInfo;
+    }, [user]);
 
     useEffect(() => {
         updateUser().then(() => setUserLoaded(true));
@@ -67,6 +88,8 @@ export function useAuth(){
         isSigned,
         isUserLoaded,
         authToken,
-        user
+        user,
+        getUserInfo,
+        setUserInfo,
     }
 }

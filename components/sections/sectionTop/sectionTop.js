@@ -1,4 +1,7 @@
+import {useAuth} from "../../../lib/hooks/useAuth";
+
 export const SectionTop = () => {
+    const {user, isUserLoaded} = useAuth();
     return (
         <>
             <div className="toggle-sidebar">
@@ -8,12 +11,7 @@ export const SectionTop = () => {
             </div>
 
             <div className="accaunt">
-                <div className="textname">Никита Тумаров</div>
-            </div>
-
-
-            <div className="accauntimage">
-                <img src="assets/img/humanicon.png" height="50px" width="50px"/>
+                <div className="textname"><a href="/account">{user? `${user.first_name} ${user.second_name}` : ""}</a></div>
             </div>
         </>
     )
