@@ -14,7 +14,7 @@ export const Nalog = () => {
                 </div>
 
                 <div className="textnalog6" onClick={() => setActiveNalog(0)}>Упрощенная система налогооблажения</div>
-                <div className="textnalog6two" onClick={() => setActiveNalog(0)}>"Доходы 6%"</div>
+                <div className="textnalog6two" onClick={() => setActiveNalog(0)}>Доходы 6%</div>
 
 
 
@@ -23,7 +23,7 @@ export const Nalog = () => {
                 </div>
 
                 <div className="textnalog15" onClick={() => setActiveNalog(1)}>Упрощенная система налогооблажения</div>
-                <div className="textnalog15two" onClick={() => setActiveNalog(1)}>"Доходы-Расходы 15%"</div>
+                <div className="textnalog15two" onClick={() => setActiveNalog(1)}>Доходы-Расходы 15%</div>
 
 
 
@@ -34,7 +34,7 @@ export const Nalog = () => {
                 </div>
 
                 <div className="textnalog20" onClick={() => setActiveNalog(2)}>Общая система налогооблажения</div>
-                <div className="textnalog20two" onClick={() => setActiveNalog(2)}>"Доходы-Расходы 20% +НДС"</div>
+                <div className="textnalog20two" onClick={() => setActiveNalog(2)}>Доходы-Расходы 20% +НДС</div>
             </div>
 
 

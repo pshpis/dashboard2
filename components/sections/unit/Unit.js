@@ -183,7 +183,7 @@ export const Unit = () => {
                                 <datalist id="stores">
                                     {
                                         subjectsDataFunc.stores.map(store => {
-                                            return <option value={store}/>
+                                            return <option value={store} key={store}/>
                                         })
                                     }
                                 </datalist>
@@ -201,7 +201,7 @@ export const Unit = () => {
                                 <datalist id="category">
                                     {
                                         subjectsDataFunc.categories.map(c => {
-                                            return <option value={c}/>
+                                            return <option value={c} key={c}/>
                                         })
                                     }
                                 </datalist>
@@ -216,7 +216,7 @@ export const Unit = () => {
                                 <datalist id="subjects">
                                     {
                                         listSubjects.map(c => {
-                                            return <option value={c}/>
+                                            return <option value={c} key = {c}/>
                                         })
                                     }
                                 </datalist>

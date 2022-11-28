@@ -37,9 +37,9 @@ export const Sidebar = ({activeMenuElementId, setActiveMenuElementId}) => {
     }, [])
 
     const getSetActive = useCallback((id: number) : () => void => {
-        return useCallback(() => {
+        return () => {
             setActiveMenuElementId(id);
-        }, [setActiveMenuElementId, id]);
+        };
     }, [setActiveMenuElementId]);
 
     const getIsActive = useCallback((id: number) : boolean => {

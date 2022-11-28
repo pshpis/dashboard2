@@ -1,6 +1,7 @@
 import {useAuth} from "../../lib/hooks/useAuth";
 import {useRouter} from "next/router";
 import {useCallback, useEffect, useRef, useState} from "react";
+import Link from "next/link";
 
 
 export const Account = () => {
@@ -102,12 +103,12 @@ export const Account = () => {
 
             <button className="save" onClick={() => safeUserInfo()}>Сохранить</button>
             <div className="work">
-                <a href="/"><img src="/img/bx-log-out.png" height="40px" width="40px"/></a>
+                <Link href="/"><img src="/img/bx-log-out.png" height="40px" width="40px"/></Link>
             </div>
 
 
             <div className="worktext" >
-                <div className="textname"><a href="/">Вернуться к работе</a></div>
+                <div className="textname"><Link href="/">Вернуться к работе</Link></div>
             </div>
 
             <div className="accaunt">

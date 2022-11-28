@@ -77,7 +77,7 @@ export const Auth = () => {
                     <input type="button" value="Войти" className="btn" ref={loginBtnRef} onClick={async () => {await onLoginBtnClick();}}/>
                         <p className="social-text"/>
                         <div className="social-media"/>
-                    <p className="account-text">Don't have an account? <a href="#" id="sign-up-btn2">Sign up</a></p>
+                    <p className="account-text">Dont have an account? <a href="#" id="sign-up-btn2">Sign up</a></p>
                 </form>
             <form action="" className="sign-up-form">
                 <h2 className="title">Быстрая регистрация</h2>
