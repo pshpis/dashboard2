@@ -1,32 +1,69 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id  Int   @id @default(autoincrement())
-  first_name String
-  second_name String
-  email String @unique
-  password_hash String
-  updated_at DateTime @updatedAt
-  created_at DateTime @default(now())
-  auth_token String   @unique
+  id            Int      @unique(map: "User_pk") @default(autoincrement())
+  email         String   @unique(map: "unique14") @db.VarChar(100)
+  password_hash String   @unique(map: "unique15") @db.VarChar(200)
+  updated_at    DateTime @default(now()) @updatedAt @db.Timestamp(0)
+  created_at    DateTime @default(now()) @db.Timestamp(0)
+  auth_token    String   @unique(map: "unique16") @db.VarChar(200)
+  first_name    String   @db.VarChar(100)
+  second_name   String   @db.VarChar(100)
 }
 
 model UserInfo {
-  id Int   @id @default(autoincrement())
-  user_id Int @unique
-  phone_number String @default("")
-  company_name String @default("")
-  INN String @default("")
-  payment_account String @default("")
-  bank_id String @default("")
+  id              Int    @unique(map: "unique11") @default(autoincrement())
+  user_id         Int    @unique(map: "UserInfo_pk")
+  phone_number    String @default("") @db.VarChar(20)
+  company_name    String @default("") @db.VarChar(100)
+  INN             String @default("") @db.VarChar(30)
+  payment_account String @default("") @db.VarChar(30)
+  bank_id         String @default("") @db.VarChar(30)
+}
+
+model Categories {
+  id       Int    @unique(map: "unique8") @default(autoincrement())
+  Category String @unique(map: "Categories_pk2") @db.VarChar(500)
+}
+
+model Prices {
+  id        Int    @unique(map: "Prices_pk") @default(autoincrement())
+  Subject   String @unique(map: "Prices_pk1") @db.VarChar(500)
+  FullPrice Int
+  Price     Int
+}
+
+model Stores {
+  id    Int    @unique(map: "unique5") @default(autoincrement())
+  Store String @unique(map: "Stores_pk2") @db.VarChar(500)
+}
+
+model Subjects {
+  id                     Int     @unique(map: "unique2") @default(autoincrement())
+  FullName               String? @db.Text
+  Store                  String  @db.Text
+  Category               String  @db.Text
+  Subject                String  @db.Text
+  CommissionPercentage   Int
+  CostLogisticsBox       Int
+  CostLogisticsMonopalet Int
+  CostStorageBox         Float
+  CostStorageMonopalet   Int
+  CostReceptionBox       Int
+  CostReceptionMonopalet Int
+  CostReceptionSupersafe Int
+  NeedCalculation        Boolean
+}
+
+model Turnover {
+  id       Int    @unique(map: "Turnover_pk") @default(autoincrement())
+  Category String @unique(map: "Turnover_pk2") @db.VarChar(500)
+  Turnover Int
 }

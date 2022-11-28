@@ -41,6 +41,7 @@ export const Account = () => {
         setSecondName(auth.user.second_name);
         setEmail(auth.user.email);
         auth.getUserInfo().then(info => {
+
             setDefaultUserInfo(info);
         })
     }, [auth.isSigned]);
