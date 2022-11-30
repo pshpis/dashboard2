@@ -1,5 +1,5 @@
 import prisma from "../prisma";
-import {Stores, Categories, Subjects, Prices, Turnover} from "@prisma/client"
+import {Stores, Categories, Subjects, Prices, Turnover, Calculations} from "@prisma/client"
 
 export class CalculationService {
     public static async getStores() : Promise<Array<string>>{
@@ -70,5 +70,20 @@ export class CalculationService {
             }
         });
         return subjectData;
+    }
+
+    public static async getCalculations(user_id: number){
+        const calcs : Array<Calculations> = await prisma.calculations.findMany({
+            where: {
+                user_id: user_id,
+            }
+        });
+        return calcs;
+    }
+
+    public static async addCalculation(obj){
+        return await prisma.calculations.create({
+            data: obj,
+        });
     }
 }

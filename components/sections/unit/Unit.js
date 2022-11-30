@@ -1,13 +1,18 @@
 import {SectionTop} from "../sectionTop/sectionTop";
 import {useSubjectsData} from "../../../lib/hooks/useSubjectsData";
-import {useEffect, useState} from "react";
-import {use} from "bcrypt/promises";
+import {useCallback, useEffect, useState} from "react";
+import {useAuth} from "../../../lib/hooks/useAuth";
 
-export const Unit = () => {
+
+const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
+                     defName = "", defBrand = "", defColor = "",
+                     defSize = "", defCount = 0, defCost = 0, defBarcode = ""}) => {
+    const auth = useAuth();
     const subjectsDataFunc = useSubjectsData();
-    const [currentSubject, setCurrentSubject] = useState("");
-    const [currentCategory, setCurrentCategory] = useState("");
-    const [currentStore, setCurrentStore] = useState("");
+    const [currentId, setCurrentId] = useState(JSON.parse(JSON.stringify(id)));
+    const [currentSubject, setCurrentSubject] = useState(JSON.parse(JSON.stringify(defSubject)));
+    const [currentCategory, setCurrentCategory] = useState(JSON.parse(JSON.stringify(defCategory)));
+    const [currentStore, setCurrentStore] = useState(JSON.parse(JSON.stringify(defStore)));
     const [listSubjects, setListSubjects] = useState([]);
     const [packaging, setPackaging] = useState("");
     const [subjectData, setSubjectData] = useState({});
@@ -17,8 +22,14 @@ export const Unit = () => {
     const [price, setPrice] = useState("");
     const [fullPrice, setFullPrice] = useState("");
     const [turnover, setTurnover] = useState("");
-    const [cost, setCost] = useState(0);
-    
+    const [cost, setCost] = useState(JSON.parse(JSON.stringify(defCost)));
+    const [name, setName] = useState(JSON.parse(JSON.stringify(defName)));
+    const [brand, setBrand] = useState(JSON.parse(JSON.stringify(defBrand)));
+    const [color, setColor] = useState(JSON.parse(JSON.stringify(defColor)));
+    const [size, setSize] = useState(JSON.parse(JSON.stringify(defSize)));
+    const [count, setCount] = useState(JSON.parse(JSON.stringify(defCount)));
+    const [barcode, setBarcode] = useState(JSON.parse(JSON.stringify(defBarcode)));
+    const [subjectsOptions, setSubjectsOptions] = useState([]);
 
     useEffect(() => {
         if (currentCategory === "" || currentStore === "" || currentSubject === "") return;
@@ -29,12 +40,12 @@ export const Unit = () => {
 
     useEffect(() => {
         if (currentCategory === "" || currentStore === "" || currentSubject === "") return;
-            setPackaging(subjectData.CostLogisticsBox * 0.25)
+        setPackaging(subjectData.CostLogisticsBox * 0.25)
     }, [subjectData, currentSubject]);
 
     useEffect(() => {
         if (currentCategory === "" || currentStore === "" || currentSubject === "") return;
-            setLogisticMarketplace(subjectData.CostLogisticsBox)
+        setLogisticMarketplace(subjectData.CostLogisticsBox)
     }, [subjectData, currentSubject]);
 
     useEffect(() => {
@@ -62,6 +73,149 @@ export const Unit = () => {
             setTurnover(res)
         });
     }, [subjectData, currentCategory]);
+
+    const onSave = useCallback(async () => {
+        console.log(currentStore);
+        console.log(currentCategory);
+        console.log(currentSubject);
+        console.log(name);
+        console.log(brand);
+        console.log(color);
+        console.log(size);
+        console.log(count);
+        console.log(cost);
+        console.log(barcode);
+
+        if (currentId === -1){
+            let newId = await subjectsDataFunc.addCalculation({
+                user_id: auth.user.id,
+                store: currentStore,
+                category: currentCategory,
+                subject: currentSubject,
+                name: name,
+                brand: brand,
+                color: color,
+                size: size,
+                count: count,
+                cost: cost,
+                barcode: barcode,
+            }).id;
+            newId = parseInt(newId);
+            setCurrentId(newId);
+        }
+    }, [currentStore, currentCategory, currentSubject, name, brand, color, size, count, cost, barcode]);
+
+    const updateListSubjects = useCallback(async () => {
+        if (currentCategory !== "" && currentStore !== ""){
+            const newList = await subjectsDataFunc.getSubjects(currentStore, currentCategory);
+            setListSubjects(newList);
+        }
+    }, [currentStore, currentCategory, subjectsDataFunc, subjectsDataFunc.getSubjects, setListSubjects]);
+
+    useEffect(() => {
+        console.log(listSubjects);
+        const newOptions = listSubjects.map(c => {
+            return <option value={c} key = {c}/>
+        });
+        setSubjectsOptions(newOptions);
+    }, [listSubjects]);
+
+    useEffect(() => {
+        updateListSubjects();
+    }, [currentStore, currentCategory])
+
+    return <tr>
+        <td>
+            <input list="stores" defaultValue={currentStore} onChange={async (evt) => {
+                const store = evt.target.value;
+                if (subjectsDataFunc.stores.indexOf(store) !== -1){
+                    setCurrentStore(store);
+                }
+            } }/>
+            <datalist id="stores">
+                {
+                    subjectsDataFunc.stores.map(store => {
+                        return <option value={store} key={store}/>
+                    })
+                }
+            </datalist>
+        </td>
+        <td>
+            <input list="category" defaultValue={currentCategory} onChange={async (evt) => {
+                const category = evt.target.value;
+                if (subjectsDataFunc.categories.indexOf(category) !== -1){
+                    setCurrentCategory(category);
+                }
+            } }/>
+            <datalist id="category">
+                {
+                    subjectsDataFunc.categories.map(c => {
+                        return <option value={c} key={c}/>
+                    })
+                }
+            </datalist>
+        </td>
+        <td>
+            <input list="subjects" defaultValue={currentSubject} onChange={async (evt) => {
+                const subject = evt.target.value;
+                if (listSubjects.indexOf(subject) !== -1){
+                    setCurrentSubject(subject);
+                }
+            } }/>
+            <datalist id="subjects">
+                {subjectsOptions}
+            </datalist>
+        </td>
+        <td><input type="text" defaultValue={name} onChange={(evt) => {setName(evt.target.value)}}/></td>
+        <td><input type="text" defaultValue={brand} onChange={(evt) => {setBrand(evt.target.value)}}/></td>
+        <td><input type="text" defaultValue={color} onChange={evt => {setColor(evt.target.value)}}/></td>
+        <td><input type="text" defaultValue={size} onChange={evt => {setSize(evt.target.value)}}/></td>
+        <td><input type="number" defaultValue={count} onChange={evt => {setCount(+evt.target.value)}}/></td>
+        <td><input type="number" defaultValue={cost} onChange={evt => {
+            setCost(+evt.target.value);
+        }}/></td>
+        <td>{packaging}</td>
+        <td>{logistic}</td>
+        <td>{commission}</td>
+        <td>{commission * price / 100}</td>
+        <td>{logisticMarketplace}</td>
+        <td>{subjectData.CostStorageBox}</td>
+        <td>{subjectData.CostStorageBox * turnover}</td>
+        <td>{turnover}</td>
+        <td>{price - (subjectData.CostStorageBox * turnover) - logisticMarketplace - (commission * price / 100) - logistic - packaging - cost }</td>
+        <td>{price}</td>
+        <td>{Math.round((fullPrice - price) / fullPrice * 100) + '%'}</td>
+        <td>{fullPrice}</td>
+        <td><input type="text" defaultValue={barcode} onChange={evt => {setBarcode(evt.target.value)}}/></td>
+        <td><button onClick={onSave}>Сохранить</button></td>
+    </tr>
+}
+export const Unit = () => {
+    const auth = useAuth();
+    const subjectsDataFunc = useSubjectsData();
+    const [sections, setSections] = useState([]);
+    useEffect(() => {
+        console.log(auth);
+        if (!auth.user) return;
+        subjectsDataFunc.getCalculations(auth.user.id).then(res => {
+            console.log(res);
+            const newSections = res.map(data => {
+                // console.log(data);
+                return  <CalcRow auth={auth} subjectsDataFunc={subjectsDataFunc} id={data.id}
+                        defStore={data.Store} defCategory={data.Category} defSubject={data.Subject}
+                        defName={data.Name} defBrand={data.Brand} defColor={data.Color}
+                        defSize={data.Size} defCount={data.Count} defCost={data.Cost} defBarcode={data.Barcode}/>
+
+            });
+            setSections(newSections);
+        })
+    }, [auth.user])
+
+    const addCalcRow = useCallback(() => {
+        const newSections = sections;
+        newSections.push(<CalcRow auth={auth} subjectsDataFunc={subjectsDataFunc} id={-1}/>);
+        setSections(newSections)
+    }, [sections, setSections])
 
     return (
         <section className="home">
@@ -130,7 +284,7 @@ export const Unit = () => {
 
             <div className="textoreview">
                 Расчет ценообразования и затрат (UNIT-Экономика товара) &nbsp; &nbsp; &nbsp; &nbsp;
-                <span> + </span>
+                <span onClick={addCalcRow}> + </span>
             </div>
 
 
@@ -166,83 +320,11 @@ export const Unit = () => {
                             <th>Скидка</th>
                             <th>Цена_до_скидки</th>
                             <th>Баркод</th>
+                            <th>Сохранить</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>
-                                <input list="stores" onChange={async (evt) => {
-                                    const store = evt.target.value;
-                                    if (subjectsDataFunc.stores.indexOf(store) !== -1){
-                                        setCurrentStore(store);
-                                        if (currentCategory !== ""){
-                                            setListSubjects(await subjectsDataFunc.getSubjects(store, currentCategory));
-                                        }
-                                    }
-                                } }/>
-                                <datalist id="stores">
-                                    {
-                                        subjectsDataFunc.stores.map(store => {
-                                            return <option value={store} key={store}/>
-                                        })
-                                    }
-                                </datalist>
-                            </td>
-                            <td>
-                                <input list="category" onChange={async (evt) => {
-                                    const category = evt.target.value;
-                                    if (subjectsDataFunc.categories.indexOf(category) !== -1){
-                                        setCurrentCategory(category);
-                                        if (currentStore !== ""){
-                                            setListSubjects(await subjectsDataFunc.getSubjects(currentStore, category));
-                                        }
-                                    }
-                                } }/>
-                                <datalist id="category">
-                                    {
-                                        subjectsDataFunc.categories.map(c => {
-                                            return <option value={c} key={c}/>
-                                        })
-                                    }
-                                </datalist>
-                            </td>
-                            <td>
-                                <input list="subjects" onChange={async (evt) => {
-                                const subject = evt.target.value;
-                                if (listSubjects.indexOf(subject) !== -1){
-                                    setCurrentSubject(subject);
-                                }
-                            } }/>
-                                <datalist id="subjects">
-                                    {
-                                        listSubjects.map(c => {
-                                            return <option value={c} key = {c}/>
-                                        })
-                                    }
-                                </datalist>
-                            </td>
-                            <td><input type="text"/></td>
-                            <td><input type="text"/></td>
-                            <td><input type="text"/></td>
-                            <td><input type="text"/></td>
-                            <td><input type="number"/></td>
-                            <td><input type="number" onChange={evt => {
-                                setCost(+evt.target.value);
-                            }}/></td>
-                            <td>{packaging}</td>
-                            <td>{logistic}</td>
-                            <td>{commission}</td>
-                            <td>{commission * price / 100}</td>
-                            <td>{logisticMarketplace}</td>
-                            <td>{subjectData.CostStorageBox}</td>
-                            <td>{subjectData.CostStorageBox * turnover}</td>
-                            <td>{turnover}</td>
-                            <td>{price - (subjectData.CostStorageBox * turnover) - logisticMarketplace - (commission * price / 100) - logistic - packaging - cost }</td>
-                            <td>{price}</td>
-                            <td>{Math.round((fullPrice - price) / fullPrice * 100) + '%'}</td>
-                            <td>{fullPrice}</td>
-                            <td><input type="text"/></td>
-                        </tr>
+                        {sections}
                         </tbody>
 
 

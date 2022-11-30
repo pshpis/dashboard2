@@ -67,3 +67,18 @@ model Turnover {
   Category String @unique(map: "Turnover_pk2") @db.VarChar(500)
   Turnover Int
 }
+
+model Calculations {
+  id       Int     @unique(map: "Calculations_pk") @default(autoincrement())
+  user_id  Int?
+  Store    String? @db.VarChar(500)
+  Category String? @db.VarChar(500)
+  Subject  String? @db.VarChar(500)
+  Name     String? @db.VarChar(500)
+  Brand    String? @db.VarChar(500)
+  Color    String? @db.VarChar(500)
+  Size     String? @db.VarChar(500)
+  Count    Int?
+  Cost     Int?
+  Barcode  String? @db.VarChar(14)
+}

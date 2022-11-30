@@ -1,6 +1,7 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {CalculationService} from "../services/CalculationService";
 import DefaultController from "./DefaultController";
+import {Calculations} from "@prisma/client";
 
 export default class CalculationController {
     public static async getStores(req: NextApiRequest, res: NextApiResponse){
@@ -52,4 +53,42 @@ export default class CalculationController {
         return res.status(200).json(prices);
     }
 
+    public static async getCalculations(req: NextApiRequest, res: NextApiResponse){
+        let {query: {user_id}, method} = req;
+        if (method !== "GET") return res.status(404).json({});
+        user_id = DefaultController.validateMultiData(user_id);
+        const userId = parseInt(user_id);
+        const calculations = await CalculationService.getCalculations(userId);
+        return res.status(200).json(calculations);
+    }
+
+    public static async addCalculation(req: NextApiRequest, res: NextApiResponse){
+        let {method, query: {user_id, Store, Category, Subject, Name, Brand, Color, Size, Count, Cost, Barcode}} = req;
+        const user_id_int = parseInt(DefaultController.validateMultiData(user_id));
+        Store = DefaultController.validateMultiData(Store);
+        Category = DefaultController.validateMultiData(Category);
+        Subject = DefaultController.validateMultiData(Subject);
+        Name = DefaultController.validateMultiData(Name);
+        Brand = DefaultController.validateMultiData(Brand);
+        Color = DefaultController.validateMultiData(Color);
+        Size = DefaultController.validateMultiData(Size);
+        const Count_int = parseInt(DefaultController.validateMultiData(Count));
+        const Cost_int = parseInt(DefaultController.validateMultiData(Cost));
+        Barcode = DefaultController.validateMultiData(Barcode);
+        if (method !== "GET") return res.status(404).json({});
+        const calculation = await CalculationService.addCalculation({
+            user_id: user_id_int,
+            Store: Store,
+            Category: Category,
+            Subject: Subject,
+            Name: Name,
+            Brand: Brand,
+            Color: Color,
+            Size: Size,
+            Count: Count_int,
+            Cost: Cost_int,
+            Barcode: Barcode,
+        });
+        return res.status(200).json(calculation);
+    }
 }

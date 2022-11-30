@@ -29,7 +29,7 @@ export function useSubjectsData(){
     const getSubjects = useCallback(async (store, category) => {
         const req = await fetch(`/api/calc/get_subjects?store=${store}&category=${category}`);
         return await req.json();
-    }, []);
+    }, [stores, categories]);
 
     const getTurnover = useCallback(async (category) : Promise<number> => {
         const req = await fetch(`/api/calc/get_turnover?category=${category}`);
@@ -46,6 +46,18 @@ export function useSubjectsData(){
         return await req.json();
     }, []);
 
+    const addCalculation = useCallback(async (data) => {
+        const req = await fetch(`/api/calc/add_calculation?` +
+        `user_id=${data.user_id}&Store=${data.store}&Category=${data.category}&Subject=${data.subject}&Name=${data.name}` +
+        `&Brand=${data.brand}&Color=${data.color}&Size=${data.size}&Count=${data.count}&Cost=${data.cost}&Barcode=${data.barcode}`);
+        return await req.json();
+    }, []);
+
+    const getCalculations = useCallback(async (user_id) => {
+        const req = await fetch(`/api/calc/get_calculations?user_id=${user_id}`);
+        return await req.json();
+    }, []);
+
     return {
         stores,
         loadStoresData,
@@ -55,5 +67,7 @@ export function useSubjectsData(){
         getTurnover,
         getPrices,
         getSubjectData,
+        addCalculation,
+        getCalculations,
     }
 }
