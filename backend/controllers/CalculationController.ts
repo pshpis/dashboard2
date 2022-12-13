@@ -1,7 +1,6 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import {CalculationService} from "../services/CalculationService";
 import DefaultController from "./DefaultController";
-import {Calculations} from "@prisma/client";
 
 export default class CalculationController {
     public static async getStores(req: NextApiRequest, res: NextApiResponse){

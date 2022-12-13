@@ -2,10 +2,6 @@ import {NextApiRequest, NextApiResponse} from "next";
 import DefaultController from "./DefaultController";
 import {UserInfo} from "@prisma/client";
 import UserInfoService from "../services/UserInfoService";
-
-type controllerMethod = (req: NextApiRequest, res:NextApiResponse) => void;
-
-// todo: add methods from service
 export default class UserInfoController implements DefaultController{
     public static async getUserInfoByUserId(req: NextApiRequest, res: NextApiResponse): Promise<void> {
         let {query: {user_id}, method} = req;

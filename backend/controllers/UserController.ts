@@ -3,8 +3,6 @@ import UserService from "../services/UserService";
 import {User} from "@prisma/client";
 import DefaultController from "./DefaultController";
 
-type controllerMethod = (req: NextApiRequest, res:NextApiResponse) => void;
-
 export default class UserController implements DefaultController {
 
     // return auth_token from new user

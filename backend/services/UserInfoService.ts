@@ -1,5 +1,5 @@
 import db from "../db"
-import {User, UserInfo} from "@prisma/client"
+import {UserInfo} from "@prisma/client"
 
 export default class UserInfoService{
     public static async getUserInfoByUserId(user_id: number): Promise<UserInfo> {
