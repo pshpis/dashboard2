@@ -91,4 +91,43 @@ export default class CalculationController {
         });
         return res.status(200).json(calculation);
     }
+
+    public static async updateCalculation(req: NextApiRequest, res: NextApiResponse){
+        let {method, query: {id, user_id, Store, Category, Subject, Name, Brand, Color, Size, Count, Cost, Barcode}} = req;
+        const id_int = parseInt(DefaultController.validateMultiData(id));
+        const user_id_int = parseInt(DefaultController.validateMultiData(user_id));
+        Store = DefaultController.validateMultiData(Store);
+        Category = DefaultController.validateMultiData(Category);
+        Subject = DefaultController.validateMultiData(Subject);
+        Name = DefaultController.validateMultiData(Name);
+        Brand = DefaultController.validateMultiData(Brand);
+        Color = DefaultController.validateMultiData(Color);
+        Size = DefaultController.validateMultiData(Size);
+        const Count_int = parseInt(DefaultController.validateMultiData(Count));
+        const Cost_int = parseInt(DefaultController.validateMultiData(Cost));
+        Barcode = DefaultController.validateMultiData(Barcode);
+        if (method !== "GET") return res.status(404).json({});
+        const calculation = await CalculationService.updateCalculation(id_int, {
+            user_id: user_id_int,
+            Store: Store,
+            Category: Category,
+            Subject: Subject,
+            Name: Name,
+            Brand: Brand,
+            Color: Color,
+            Size: Size,
+            Count: Count_int,
+            Cost: Cost_int,
+            Barcode: Barcode,
+        });
+        return res.status(200).json(calculation);
+    }
+
+    public static async deleteCalculation(req: NextApiRequest, res: NextApiResponse){
+        let {method, query: {id}} = req;
+        const id_int = parseInt(DefaultController.validateMultiData(id));
+        if (method !== "GET") return res.status(404).json({});
+        await CalculationService.deleteCalculation(id_int);
+        return res.status(200);
+    }
 }

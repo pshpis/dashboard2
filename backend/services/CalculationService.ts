@@ -86,4 +86,21 @@ export class CalculationService {
             data: obj,
         });
     }
+
+    public static async updateCalculation(id, obj){
+        return await prisma.calculations.update({
+            where: {
+                id: id,
+            },
+            data: obj,
+        })
+    }
+
+    public static async deleteCalculation(id){
+        await prisma.calculations.delete({
+            where: {
+                id: id,
+            }
+        })
+    }
 }

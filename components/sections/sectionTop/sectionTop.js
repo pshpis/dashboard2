@@ -12,7 +12,7 @@ export const SectionTop = () => {
             </div>
 
             <div className="accaunt">
-                <div className="textname"><Link href="/account" prefetch={false} replace legacyBehavior>{user? `${user.first_name} ${user.second_name}` : ""}</Link></div>
+                <div className="textname"><Link href="/account">{user? `${user.first_name} ${user.second_name}` : ""}</Link></div>
             </div>
         </>
     )

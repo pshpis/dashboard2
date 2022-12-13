@@ -11,7 +11,7 @@ export function useSubjectsData(){
 
     useEffect(() => {
         loadStoresData();
-    }, [loadStoresData]);
+    }, []);
 
 
 
@@ -22,7 +22,7 @@ export function useSubjectsData(){
 
     useEffect(() => {
         loadCategoriesData();
-    }, [loadCategoriesData]);
+    }, []);
 
 
 
@@ -56,6 +56,19 @@ export function useSubjectsData(){
     const getCalculations = useCallback(async (user_id) => {
         const req = await fetch(`/api/calc/get_calculations?user_id=${user_id}`);
         return await req.json();
+
+
+    }, []);
+
+    const updateCalculation = useCallback(async (id, data) => {
+        const req = await fetch(`/api/calc/update_calculation?` +
+            `id=${id}&user_id=${data.user_id}&Store=${data.store}&Category=${data.category}&Subject=${data.subject}&Name=${data.name}` +
+            `&Brand=${data.brand}&Color=${data.color}&Size=${data.size}&Count=${data.count}&Cost=${data.cost}&Barcode=${data.barcode}`);
+        return await req.json();
+    }, []);
+
+    const deleteCalculation = useCallback(async (id) => {
+        const req = await fetch(`/api/calc/delete_calculation?id=${id}`);
     }, []);
 
     return {
@@ -69,5 +82,7 @@ export function useSubjectsData(){
         getSubjectData,
         addCalculation,
         getCalculations,
+        updateCalculation,
+        deleteCalculation,
     }
 }

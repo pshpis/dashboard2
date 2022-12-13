@@ -4,11 +4,22 @@ import {useCallback, useEffect, useState} from "react";
 import {useAuth} from "../../../lib/hooks/useAuth";
 
 
+function makeId(length) {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
 const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
                      defName = "", defBrand = "", defColor = "",
                      defSize = "", defCount = 0, defCost = 0, defBarcode = ""}) => {
     const auth = useAuth();
     const subjectsDataFunc = useSubjectsData();
+
     const [currentId, setCurrentId] = useState(JSON.parse(JSON.stringify(id)));
     const [currentSubject, setCurrentSubject] = useState(JSON.parse(JSON.stringify(defSubject)));
     const [currentCategory, setCurrentCategory] = useState(JSON.parse(JSON.stringify(defCategory)));
@@ -29,7 +40,6 @@ const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
     const [size, setSize] = useState(JSON.parse(JSON.stringify(defSize)));
     const [count, setCount] = useState(JSON.parse(JSON.stringify(defCount)));
     const [barcode, setBarcode] = useState(JSON.parse(JSON.stringify(defBarcode)));
-    const [subjectsOptions, setSubjectsOptions] = useState([]);
 
     useEffect(() => {
         if (currentCategory === "" || currentStore === "" || currentSubject === "") return;
@@ -103,6 +113,21 @@ const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
             newId = parseInt(newId);
             setCurrentId(newId);
         }
+        else {
+            await subjectsDataFunc.updateCalculation(currentId, {
+                user_id: auth.user.id,
+                store: currentStore,
+                category: currentCategory,
+                subject: currentSubject,
+                name: name,
+                brand: brand,
+                color: color,
+                size: size,
+                count: count,
+                cost: cost,
+                barcode: barcode,
+            });
+        }
     }, [currentStore, currentCategory, currentSubject, name, brand, color, size, count, cost, barcode]);
 
     const updateListSubjects = useCallback(async () => {
@@ -113,16 +138,8 @@ const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
     }, [currentStore, currentCategory, subjectsDataFunc, subjectsDataFunc.getSubjects, setListSubjects]);
 
     useEffect(() => {
-        console.log(listSubjects);
-        const newOptions = listSubjects.map(c => {
-            return <option value={c} key = {c}/>
-        });
-        setSubjectsOptions(newOptions);
-    }, [listSubjects]);
-
-    useEffect(() => {
         updateListSubjects();
-    }, [currentStore, currentCategory])
+    }, [currentStore, currentCategory, defStore, defCategory])
 
     return <tr>
         <td>
@@ -156,14 +173,16 @@ const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
             </datalist>
         </td>
         <td>
-            <input list="subjects" defaultValue={currentSubject} onChange={async (evt) => {
+            <input list={"subjects"+id} defaultValue={currentSubject} onChange={async (evt) => {
                 const subject = evt.target.value;
                 if (listSubjects.indexOf(subject) !== -1){
                     setCurrentSubject(subject);
                 }
             } }/>
-            <datalist id="subjects">
-                {subjectsOptions}
+            <datalist id={"subjects" + id}>
+                {listSubjects.map((c, i) => {
+                    return <option value={c} key = {i}/>
+                })}
             </datalist>
         </td>
         <td><input type="text" defaultValue={name} onChange={(evt) => {setName(evt.target.value)}}/></td>
@@ -204,18 +223,19 @@ export const Unit = () => {
                 return  <CalcRow auth={auth} subjectsDataFunc={subjectsDataFunc} id={data.id}
                         defStore={data.Store} defCategory={data.Category} defSubject={data.Subject}
                         defName={data.Name} defBrand={data.Brand} defColor={data.Color}
-                        defSize={data.Size} defCount={data.Count} defCost={data.Cost} defBarcode={data.Barcode}/>
+                        defSize={data.Size} defCount={data.Count} defCost={data.Cost} defBarcode={data.Barcode} key={makeId(8)}/>
 
             });
             setSections(newSections);
-        })
-    }, [auth.user])
+        });
+    }, [auth.user]);
 
     const addCalcRow = useCallback(() => {
         const newSections = sections;
-        newSections.push(<CalcRow auth={auth} subjectsDataFunc={subjectsDataFunc} id={-1}/>);
-        setSections(newSections)
-    }, [sections, setSections])
+
+        newSections.push(<CalcRow auth={auth} subjectsDataFunc={subjectsDataFunc} id={-1} key={makeId(8)}/>);
+        setSections(newSections);
+    }, [sections, setSections]);
 
     return (
         <section className="home">
@@ -284,7 +304,10 @@ export const Unit = () => {
 
             <div className="textoreview">
                 Расчет ценообразования и затрат (UNIT-Экономика товара) &nbsp; &nbsp; &nbsp; &nbsp;
-                <span onClick={addCalcRow}> + </span>
+                <button onClick={addCalcRow}
+                        style={{width: "50px", height: "30px", fontSize:"24px", lineHeight:"30px"}}>
+                    +
+                </button>
             </div>
 
 
