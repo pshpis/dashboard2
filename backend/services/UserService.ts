@@ -1,5 +1,6 @@
 import db from "../db"
 import {User} from "@prisma/client"
+import {H} from "@prisma/client"
 
 const bcrypt = require("bcrypt")
 

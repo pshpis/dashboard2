@@ -1,7 +1,5 @@
 generator client {
   provider      = "prisma-client-js"
-  output        = "./generated/client"
-  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -83,4 +81,8 @@ model Calculations {
   Count    Int?
   Cost     Int?
   Barcode  String? @db.VarChar(14)
+}
+
+model H{
+  id Int @unique
 }
