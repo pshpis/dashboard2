@@ -1,13 +1,9 @@
-/**
- * todo: all
- */
-
-import prisma from "../prisma"
+import db from "../db"
 import {User, UserInfo} from "@prisma/client"
 
 export default class UserInfoService{
     public static async getUserInfoByUserId(user_id: number): Promise<UserInfo> {
-        const userInfo = await prisma.userInfo.findUnique({
+        const userInfo = await db.userInfo.findUnique({
             where: {
                 user_id: user_id,
             }
@@ -15,7 +11,7 @@ export default class UserInfoService{
         if (userInfo !== null){
             return userInfo;
         }
-        return await prisma.userInfo.create({
+        return await db.userInfo.create({
             data: {
                 user_id: user_id,
             }
@@ -24,7 +20,7 @@ export default class UserInfoService{
 
     public static async setUserInfo(user_id : number, data : object): Promise<UserInfo>{
         if (await this.getUserInfoByUserId(user_id) !== null){
-            return await prisma.userInfo.update({
+            return await db.userInfo.update({
                 where: {
                     user_id: user_id,
                 },
@@ -32,7 +28,7 @@ export default class UserInfoService{
             })
         }
         else {
-            return await prisma.userInfo.create({
+            return await db.userInfo.create({
                 data: {
                     user_id: user_id,
                     ...data,

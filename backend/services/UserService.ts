@@ -1,11 +1,11 @@
-import prisma from "../prisma"
+import db from "../db"
 import {User} from "@prisma/client"
 
 const bcrypt = require("bcrypt")
 
 export default class UserService{
     public static async registerUser(firstName: string, secondName: string, email: string, password: string) : Promise<User>{
-        return await prisma.user.create({
+        return await db.user.create({
             data: {
                 first_name: firstName,
                 second_name: secondName,
@@ -17,7 +17,7 @@ export default class UserService{
     }
 
     public static async isEmailVacant(email: string): Promise<boolean>{
-        return await prisma.user.findUnique({
+        return await db.user.findUnique({
             where: {
                 email: email,
             }
@@ -25,7 +25,7 @@ export default class UserService{
     }
 
     public static async getUserByAuthToken(auth_token: string): Promise<User | null>{
-        return await prisma.user.findUnique({
+        return await db.user.findUnique({
             where: {
                 auth_token: auth_token,
             }
@@ -33,7 +33,7 @@ export default class UserService{
     }
 
     public static async getUserByEmail(email: string): Promise<User | null> {
-        return await prisma.user.findUnique({
+        return await db.user.findUnique({
             where: {
                 email: email
             }

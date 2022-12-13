@@ -1,19 +1,19 @@
-import prisma from "../prisma";
+import db from "../db";
 import {Stores, Categories, Subjects, Prices, Turnover, Calculations} from "@prisma/client"
 
 export class CalculationService {
     public static async getStores() : Promise<Array<string>>{
-        const stores : Array<Stores> = await prisma.stores.findMany();
+        const stores : Array<Stores> = await db.stores.findMany();
         return stores.map(store => store.Store);
     }
 
     public static async getCategories() : Promise<Array<string>> {
-        const categories : Array<Categories> = await prisma.categories.findMany();
+        const categories : Array<Categories> = await db.categories.findMany();
         return categories.map(c => c.Category);
     }
 
     public static async getSubjects(store: string, category: string) : Promise<Array<string>>{
-        const subjects : Array<Subjects> = await prisma.subjects.findMany({
+        const subjects : Array<Subjects> = await db.subjects.findMany({
             where: {
                 Store: store,
                 Category: category
@@ -23,7 +23,7 @@ export class CalculationService {
     }
 
     public static async getPrice(subject: string) : Promise<number> {
-        const price : Prices = await prisma.prices.findUnique({
+        const price : Prices = await db.prices.findUnique({
             where: {
                 Subject: subject,
             }
@@ -32,7 +32,7 @@ export class CalculationService {
     }
 
     public static async getFullPrice(subject: string) : Promise<number> {
-        const price : Prices = await prisma.prices.findUnique({
+        const price : Prices = await db.prices.findUnique({
             where: {
                 Subject: subject,
             }
@@ -41,7 +41,7 @@ export class CalculationService {
     }
 
     public static async getPrices(subject: string){
-        const price : Prices = await prisma.prices.findUnique({
+        const price : Prices = await db.prices.findUnique({
             where: {
                 Subject: subject,
             }
@@ -53,7 +53,7 @@ export class CalculationService {
     }
 
     public static async getTurnover(category: string) : Promise<number>{
-        const turnover : Turnover = await prisma.turnover.findUnique({
+        const turnover : Turnover = await db.turnover.findUnique({
             where: {
                 Category: category
             }
@@ -62,7 +62,7 @@ export class CalculationService {
     }
 
     public static async getSubjectData(store: string, category: string, subject: string){
-        const subjectData : Subjects = await prisma.subjects.findFirst({
+        const subjectData : Subjects = await db.subjects.findFirst({
             where: {
                 Subject: subject,
                 Category: category,
@@ -73,7 +73,7 @@ export class CalculationService {
     }
 
     public static async getCalculations(user_id: number){
-        const calcs : Array<Calculations> = await prisma.calculations.findMany({
+        const calcs : Array<Calculations> = await db.calculations.findMany({
             where: {
                 user_id: user_id,
             }
@@ -82,13 +82,13 @@ export class CalculationService {
     }
 
     public static async addCalculation(obj){
-        return await prisma.calculations.create({
+        return await db.calculations.create({
             data: obj,
         });
     }
 
     public static async updateCalculation(id, obj){
-        return await prisma.calculations.update({
+        return await db.calculations.update({
             where: {
                 id: id,
             },
@@ -97,7 +97,7 @@ export class CalculationService {
     }
 
     public static async deleteCalculation(id){
-        await prisma.calculations.delete({
+        await db.calculations.delete({
             where: {
                 id: id,
             }

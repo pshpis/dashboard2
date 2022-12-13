@@ -14,7 +14,7 @@ function makeId(length) {
     return result;
 }
 
-const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
+const CalcRow = ({id, allCount, setAllCount, defStore = "", defCategory ="", defSubject = "",
                      defName = "", defBrand = "", defColor = "",
                      defSize = "", defCount = 0, defCost = 0, defBarcode = ""}) => {
     const auth = useAuth();
@@ -40,6 +40,8 @@ const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
     const [size, setSize] = useState(JSON.parse(JSON.stringify(defSize)));
     const [count, setCount] = useState(JSON.parse(JSON.stringify(defCount)));
     const [barcode, setBarcode] = useState(JSON.parse(JSON.stringify(defBarcode)));
+
+    const [isRemoved, setIsRemoved] = useState(false);
 
     useEffect(() => {
         if (currentCategory === "" || currentStore === "" || currentSubject === "") return;
@@ -96,6 +98,8 @@ const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
         console.log(cost);
         console.log(barcode);
 
+        if (!auth.user) return;
+
         if (currentId === -1){
             let newId = await subjectsDataFunc.addCalculation({
                 user_id: auth.user.id,
@@ -128,7 +132,7 @@ const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
                 barcode: barcode,
             });
         }
-    }, [currentStore, currentCategory, currentSubject, name, brand, color, size, count, cost, barcode]);
+    }, [currentStore, currentCategory, currentSubject, currentId, name, brand, color, size, count, cost, barcode]);
 
     const updateListSubjects = useCallback(async () => {
         if (currentCategory !== "" && currentStore !== ""){
@@ -137,11 +141,17 @@ const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
         }
     }, [currentStore, currentCategory, subjectsDataFunc, subjectsDataFunc.getSubjects, setListSubjects]);
 
+    const onDelete = useCallback(async () => {
+        setIsRemoved(true);
+        if (currentId !== -1)
+            await subjectsDataFunc.deleteCalculation(currentId);
+    }, [currentId, subjectsDataFunc, subjectsDataFunc.deleteCalculation, setIsRemoved]);
+
     useEffect(() => {
         updateListSubjects();
-    }, [currentStore, currentCategory, defStore, defCategory])
+    }, [currentStore, currentCategory, defStore, defCategory]);
 
-    return <tr>
+    return isRemoved ? "" : <tr>
         <td>
             <input list="stores" defaultValue={currentStore} onChange={async (evt) => {
                 const store = evt.target.value;
@@ -189,7 +199,9 @@ const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
         <td><input type="text" defaultValue={brand} onChange={(evt) => {setBrand(evt.target.value)}}/></td>
         <td><input type="text" defaultValue={color} onChange={evt => {setColor(evt.target.value)}}/></td>
         <td><input type="text" defaultValue={size} onChange={evt => {setSize(evt.target.value)}}/></td>
-        <td><input type="number" defaultValue={count} onChange={evt => {setCount(+evt.target.value)}}/></td>
+        <td><input type="number" defaultValue={count} onChange={evt => {
+            setCount(+evt.target.value);
+        }}/></td>
         <td><input type="number" defaultValue={cost} onChange={evt => {
             setCost(+evt.target.value);
         }}/></td>
@@ -207,23 +219,32 @@ const CalcRow = ({id, defStore = "", defCategory ="", defSubject = "",
         <td>{fullPrice}</td>
         <td><input type="text" defaultValue={barcode} onChange={evt => {setBarcode(evt.target.value)}}/></td>
         <td><button onClick={onSave}>Сохранить</button></td>
+        <td><button onClick={onDelete}>Удалить</button></td>
     </tr>
 }
 export const Unit = () => {
     const auth = useAuth();
     const subjectsDataFunc = useSubjectsData();
     const [sections, setSections] = useState([]);
+    const [allCount, setAllCount] = useState(0);
+    const [allMoney, setAllMoney] = useState(0);
+
     useEffect(() => {
         console.log(auth);
         if (!auth.user) return;
         subjectsDataFunc.getCalculations(auth.user.id).then(res => {
             console.log(res);
             const newSections = res.map(data => {
+                let newAllCount = allCount + (+data.Count);
+                setAllCount(newAllCount);
+                let newAllMoney = allMoney + data.Count * data.Cost;
+                setAllMoney(newAllMoney);
                 // console.log(data);
                 return  <CalcRow auth={auth} subjectsDataFunc={subjectsDataFunc} id={data.id}
                         defStore={data.Store} defCategory={data.Category} defSubject={data.Subject}
                         defName={data.Name} defBrand={data.Brand} defColor={data.Color}
-                        defSize={data.Size} defCount={data.Count} defCost={data.Cost} defBarcode={data.Barcode} key={makeId(8)}/>
+                        defSize={data.Size} defCount={data.Count} defCost={data.Cost} defBarcode={data.Barcode}
+                        key={makeId(8)}/>
 
             });
             setSections(newSections);
@@ -231,9 +252,12 @@ export const Unit = () => {
     }, [auth.user]);
 
     const addCalcRow = useCallback(() => {
-        const newSections = sections;
+        const newSections = [...sections];
+        const newSection = <CalcRow auth={auth} subjectsDataFunc={subjectsDataFunc} id={-1} key={makeId(8)}/>;
 
-        newSections.push(<CalcRow auth={auth} subjectsDataFunc={subjectsDataFunc} id={-1} key={makeId(8)}/>);
+        newSections.push(newSection);
+        console.log(newSection);
+        console.log(sections.length);
         setSections(newSections);
     }, [sections, setSections]);
 
@@ -248,7 +272,7 @@ export const Unit = () => {
 
                 <div className="textsku">Количество карточек</div>
                 <div className="textskutwo">SKU</div>
-                <div className="textskuthree">125</div>
+                <div className="textskuthree">{sections.length}</div>
 
                 <div className="iconsku">
                     <img src="/img/bxs-cabinet.svg" height="50px" width="50px"/>
@@ -261,7 +285,7 @@ export const Unit = () => {
 
                 <div className="textvp">Количество товаров</div>
                 <div className="textvptwo">ШТ</div>
-                <div className="textvpthree">4750</div>
+                <div className="textvpthree">{allCount}</div>
 
                 <div className="iconsvp">
                     <img src="/img/bxs-basket.svg" height="50px" width="50px"/>
@@ -277,7 +301,7 @@ export const Unit = () => {
 
                 <div className="textvm">Денежные средства</div>
                 <div className="textvmtwo">₽</div>
-                <div className="textvmthree">127800</div>
+                <div className="textvmthree">{allMoney}</div>
 
                 <div className="iconsvm">
                     <img src="/img/bxs-wallet.svg" height="50px" width="50px"/>
@@ -344,6 +368,7 @@ export const Unit = () => {
                             <th>Цена_до_скидки</th>
                             <th>Баркод</th>
                             <th>Сохранить</th>
+                            <th>Удалить</th>
                         </tr>
                         </thead>
                         <tbody>
