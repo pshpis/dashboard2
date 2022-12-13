@@ -3,6 +3,16 @@ import {useEffect, useState} from "react";
 import {useSubjectsData} from "../../../lib/hooks/useSubjectsData";
 import {useAuth} from "../../../lib/hooks/useAuth";
 
+function makeId(length) {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
 export const Barcodes = () => {
     const auth = useAuth();
     const [tickets, setTickets] = useState([]);
@@ -17,7 +27,7 @@ export const Barcodes = () => {
                 // console.log(data);
                 return (
 
-                    <div className="ticket">
+                    <div className="ticket" key={makeId(8)}>
 
                         <div className="ticket">
                             <div className="rectangle"></div>

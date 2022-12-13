@@ -41,7 +41,7 @@ export const Nalog = () => {
 
 
             <div className="textnalog">Выберите режим налогооблажения</div>
-            <div className="textnalogname">/*Вставить имя*/</div>
+            <div className="textnalogname"></div>
             <div className="textnalogtitles">Совокупность сборов, которые взимаются с предпринимателя, организации или индивидуального предпринимателя в установленном законодательством порядке, называют системой налогообложения.</div>
 
             <div className="bordertable">
